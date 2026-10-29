@@ -34,7 +34,12 @@ class CouponsTest extends TestCase
 
     private function createCart(array $items, array $headers): array
     {
-        $this->putJson('/api/v1/cart', ['version' => 0, 'owner' => 'guest', 'items' => $items], $headers)->assertOk();
+        $user = isset($headers['X-Customer-Token'])
+            ? CustomerToken::findValid($headers['X-Customer-Token'])?->user
+            : null;
+        $owner = $user ? 'customer:'.$user->id : 'guest';
+
+        $this->putJson('/api/v1/cart', ['version' => 0, 'owner' => $owner, 'items' => $items], $headers)->assertOk();
 
         return $this->getJson('/api/v1/cart', $headers)->assertOk()->json('data');
     }
