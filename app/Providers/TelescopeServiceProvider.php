@@ -36,13 +36,12 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     protected function hideSensitiveRequestDetails(): void
     {
-        if ($this->app->environment('local')) {
-            return;
-        }
-
-        Telescope::hideRequestParameters(['_token']);
+        Telescope::hideRequestParameters(['_token', 'token']);
 
         Telescope::hideRequestHeaders([
+            'authorization',
+            'x-customer-token',
+            'x-cart-token',
             'cookie',
             'x-csrf-token',
             'x-xsrf-token',

@@ -55,6 +55,8 @@ Route::prefix('v1/customers')
     });
 
 Route::prefix('v1/cart')->middleware([AuthenticateCatalogApi::class, 'throttle:120,1'])->group(function (): void {
+    Route::post('/shipping', [\App\Http\Controllers\Api\V1\CartController::class, 'shipping'])->middleware('throttle:30,1');
+    Route::post('/shipping/select', [\App\Http\Controllers\Api\V1\CartController::class, 'selectShipping']);
     Route::get('/', [\App\Http\Controllers\Api\V1\CartController::class, 'show']);
     Route::put('/', [\App\Http\Controllers\Api\V1\CartController::class, 'update']);
 });

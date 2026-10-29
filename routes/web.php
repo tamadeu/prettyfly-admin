@@ -31,6 +31,8 @@ Route::middleware(config('template.enable_verification') ? ['auth', 'admin', 've
     Route::get('/perfil', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/perfil/nome', [App\Http\Controllers\ProfileController::class, 'updateName'])->name('profile.name.update');
     Route::put('/perfil/senha', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::get('/configuracoes/frete', [\App\Http\Controllers\ShippingSettingsController::class, 'edit'])->name('settings.shipping.edit');
+    Route::put('/configuracoes/frete', [\App\Http\Controllers\ShippingSettingsController::class, 'update'])->name('settings.shipping.update');
     Route::get('/configuracoes', [App\Http\Controllers\ApplicationSettingsController::class, 'edit'])->name('settings.application.edit');
     Route::put('/configuracoes', [App\Http\Controllers\ApplicationSettingsController::class, 'update'])->name('settings.application.update');
     Route::resource('produtos', ProductController::class)->except(['show']);

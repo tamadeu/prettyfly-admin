@@ -1,6 +1,6 @@
 # Carrinho e checkout em andamento
 
-A tabela `carts` guarda um rascunho: produtos, quantidades, informações parciais do checkout, versão e datas. Não cria pedidos, não reserva estoque e não calcula frete, descontos ou pagamentos. Os preços e descrições são obtidos do catálogo quando os produtos são salvos; não são aceitos valores enviados pelo navegador. O subtotal é uma referência do rascunho e deverá ser revalidado na futura criação do pedido.
+A tabela `carts` guarda um rascunho: produtos, quantidades, informações parciais do checkout, versão e datas. Não cria pedidos, não reserva estoque e não calcula descontos ou pagamentos. A cotação de frete está integrada ao SuperFrete; veja [configuração e funcionamento](superfrete.md). Os preços e descrições são obtidos do catálogo quando os produtos são salvos; não são aceitos valores enviados pelo navegador. O subtotal é uma referência do rascunho e deverá ser revalidado na futura criação do pedido.
 
 ## Identificação e recuperação
 
@@ -10,7 +10,7 @@ Clientes autenticados são identificados pelo mecanismo existente `X-Customer-To
 
 ## API
 
-- `GET /api/v1/cart`: retorna `data` com `id`, `owner`, `version`, `items` e `checkout`. Consultar sem produtos não cria um registro.
+- `GET /api/v1/cart`: retorna `data` com `id`, `owner`, `version`, `items`, `checkout` e `shipping`. Consultar sem produtos não cria um registro.
 - `PUT /api/v1/cart`: exige `owner` e `version` recebidos no GET. Aceita `items` (substituição da lista) e/ou `checkout` (mescla dos campos informados).
 - Cada produto enviado precisa de `productId`, `variantId` e `quantity` (1 a 99); limite de 100 variantes por requisição.
 - Campos de checkout: `first_name`, `last_name`, `country`, `postal_code`, `street`, `number`, `complement`, `neighborhood`, `city`, `state`, `phone`, `email`, `notes`.
@@ -27,6 +27,6 @@ O admin oferece **Carrinhos** em `/carrinhos`, com paginação, produtos, subtot
 
 ## Instalação e verificação
 
-Aplicar a migração `2026_10_29_220000_create_carts_table.php` e compilar os dois projetos. Não há nova variável de ambiente: são usadas `API_URL`, `API_TOKEN` e `CATALOG_API_TOKEN` já existentes.
+Aplicar as migrações `2026_10_29_220000_create_carts_table.php` e `2026_10_29_230000_add_shipping.php` e compilar os dois projetos. Não há nova variável de ambiente: são usadas `API_URL`, `API_TOKEN` e `CATALOG_API_TOKEN` já existentes.
 
 Testes de regressão: `php artisan test --filter=CartsTest`. Cobrem isolamento de visitantes, recuperação, produtos do catálogo, checkout parcial, limpeza de campos, remoção de produtos, conflitos, união após login, bloqueio de contas e acesso administrativo.

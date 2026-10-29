@@ -113,9 +113,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
                 title: 'Configurações',
-                url: route('settings.application.edit'),
+                url: '#',
                 icon: Settings,
                 isActive: url.startsWith('/configuracoes'),
+                items: [
+                    { title: 'Geral', url: route('settings.application.edit'), isActive: url === '/configuracoes' },
+                    { title: 'Frete', url: route('settings.shipping.edit'), isActive: url.startsWith('/configuracoes/frete') },
+                ],
             },
             {
                 title: 'Design system',

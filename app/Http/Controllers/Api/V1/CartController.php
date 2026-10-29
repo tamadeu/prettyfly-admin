@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\CustomerToken;
 use App\Models\ProductVariant;
 use App\Models\User;
+use App\Services\SuperFrete;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,47 @@ class CartController extends Controller
     public function update(Request $request): JsonResponse
     {
         return $this->handle($request, true);
+    }
+
+    public function shipping(Request $request, SuperFrete $frete): JsonResponse
+    {
+        return $this->shippingAction($request, $frete, false);
+    }
+
+    public function selectShipping(Request $request, SuperFrete $frete): JsonResponse
+    {
+        return $this->shippingAction($request, $frete, true);
+    }
+
+    private function shippingAction(Request $request, SuperFrete $frete, bool $select): JsonResponse
+    {
+        $data = $request->validate([
+            'version' => ['required', 'integer', 'min:0'], 'owner' => ['required', 'string', 'max:80'],
+            ...($select ? ['quote_id' => ['required', 'uuid'], 'service_id' => ['required', 'string', 'max:20']] : []),
+        ]);
+        $snapshot = $this->show($request)->getData(true)['data'];
+        abort_unless($snapshot['owner'] === $data['owner'] && $snapshot['version'] === $data['version'], 409, 'O carrinho mudou. Recarregue os dados para continuar.');
+        abort_unless($snapshot['id'], 422, 'Adicione produtos ao carrinho antes de calcular o frete.');
+        $cart = Cart::findOrFail($snapshot['id']);
+        // A consulta externa ocorre fora da transação para não bloquear a digitação no checkout.
+        $quote = $select ? null : $frete->quote($cart);
+
+        return DB::transaction(function () use ($cart, $data, $snapshot, $frete, $quote, $select) {
+            $current = Cart::whereKey($cart->id)->lockForUpdate()->firstOrFail();
+            abort_unless($current->version === $data['version'] && $current->user_id === $cart->user_id, 409, 'O carrinho mudou. Calcule o frete novamente.');
+            if ($select) {
+                $shipping = $current->shipping;
+                abort_unless($frete->isCurrent($current, $shipping) && $shipping['quote_id'] === $data['quote_id'], 409, 'A cotação expirou ou o carrinho mudou. Calcule o frete novamente.');
+                abort_unless(collect($shipping['options'])->contains('id', $data['service_id']), 422, 'Escolha uma opção de frete disponível.');
+                $shipping['selected_id'] = $data['service_id'];
+            } else {
+                abort_unless($frete->isCurrent($current, $quote), 409, 'Os dados de envio mudaram. Calcule o frete novamente.');
+                $shipping = $quote;
+            }
+            $current->update(['shipping' => $shipping, 'version' => $current->version + 1]);
+
+            return response()->json(['data' => $this->payload($current, $snapshot['owner'])]);
+        });
     }
 
     private function handle(Request $request, bool $write): JsonResponse
@@ -61,10 +103,10 @@ class CartController extends Controller
                             $item['quantity'] = min(99, $item['quantity'] + ($items->get($item['variantId'])['quantity'] ?? 0));
                             $items->put($item['variantId'], $item);
                         }
-                        $cart->update(['items' => $items->values()->all(), 'checkout' => array_replace($cart->checkout ?? [], $guest->checkout ?? []), 'version' => $cart->version + 1]);
+                        $cart->update(['items' => $items->values()->all(), 'checkout' => array_replace($cart->checkout ?? [], $guest->checkout ?? []), 'version' => $cart->version + 1, 'shipping' => null]);
                         $guest->delete();
                     } else {
-                        $guest->update(['user_id' => $user->id, 'guest_token_hash' => null, 'version' => $guest->version + 1]);
+                        $guest->update(['user_id' => $user->id, 'guest_token_hash' => null, 'version' => $guest->version + 1, 'shipping' => null]);
                         $cart = $guest;
                     }
                 }
@@ -76,7 +118,11 @@ class CartController extends Controller
                     $items = array_key_exists('items', $data) ? $this->items($data['items']) : ($cart?->items ?? []);
                     if ($cart || count($items)) {
                         $cart ??= new Cart(['user_id' => $user?->id, 'guest_token_hash' => $user ? null : $hash]);
-                        $cart->fill(['items' => $items, 'checkout' => array_replace($cart->checkout ?? [], $data['checkout'] ?? []), 'version' => ($cart->version ?? 0) + 1])->save();
+                        $cart->fill(['items' => $items, 'checkout' => array_replace($cart->checkout ?? [], $data['checkout'] ?? []), 'version' => ($cart->version ?? 0) + 1]);
+                        if (! app(SuperFrete::class)->isCurrent($cart, $cart->shipping)) {
+                            $cart->shipping = null;
+                        }
+                        $cart->save();
                     }
                 }
 
@@ -113,6 +159,9 @@ class CartController extends Controller
 
     private function payload(?Cart $cart, string $owner): array
     {
-        return ['id' => $cart?->id, 'version' => $cart?->version ?? 0, 'owner' => $owner, 'items' => $cart?->items ?? [], 'checkout' => (object) array_map(fn ($value) => $value ?? '', $cart?->checkout ?? [])];
+        $frete = app(SuperFrete::class);
+        $shipping = $cart && $frete->isCurrent($cart, $cart->shipping) ? $frete->publicQuote($cart->shipping) : null;
+
+        return ['shipping' => $shipping, 'id' => $cart?->id, 'version' => $cart?->version ?? 0, 'owner' => $owner, 'items' => $cart?->items ?? [], 'checkout' => (object) array_map(fn ($value) => $value ?? '', $cart?->checkout ?? [])];
     }
 }
