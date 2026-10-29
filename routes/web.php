@@ -35,6 +35,7 @@ Route::middleware(config('template.enable_verification') ? ['auth', 'admin', 've
     Route::put('/configuracoes', [App\Http\Controllers\ApplicationSettingsController::class, 'update'])->name('settings.application.update');
     Route::resource('produtos', ProductController::class)->except(['show']);
     Route::resource('marcas', BrandController::class)->parameters(['marcas' => 'marca'])->except(['show']);
+    Route::get('/carrinhos', [\App\Http\Controllers\CartController::class, 'index'])->name('carts.index');
     Route::resource('clientes', \App\Http\Controllers\CustomerController::class)->parameters(['clientes' => 'cliente'])->except(['show']);
     Route::resource('categorias', CategoryController::class)->except(['show']);
     Route::get('/colecoes/produtos', [CollectionController::class, 'searchProducts'])->name('colecoes.products');

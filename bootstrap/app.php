@@ -27,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->respond(function ($response, Throwable $exception, Request $request) {
-            if ($response->getStatusCode() === 429) {
+            if ($response->getStatusCode() === 429 && ! $request->expectsJson()) {
                 return back()->with('error', 'You are being ratelimited. Please try again later.');
             }
 

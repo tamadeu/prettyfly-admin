@@ -53,3 +53,8 @@ Route::prefix('v1/customers')
             Route::put('/me/wishlist', [CustomerWishlistController::class, 'sync']);
         });
     });
+
+Route::prefix('v1/cart')->middleware([AuthenticateCatalogApi::class, 'throttle:120,1'])->group(function (): void {
+    Route::get('/', [\App\Http\Controllers\Api\V1\CartController::class, 'show']);
+    Route::put('/', [\App\Http\Controllers\Api\V1\CartController::class, 'update']);
+});

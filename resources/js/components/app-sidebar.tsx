@@ -5,6 +5,7 @@ import {
     LayoutDashboard,
     Globe,
     Package,
+    ShoppingCart,
     Settings,
     Users,
     SquareTerminal,
@@ -75,6 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     },
                 ],
             },
+            { title: 'Carrinhos', url: route('carts.index'), icon: ShoppingCart, isActive: url.startsWith('/carrinhos') },
             {
                 title: 'Clientes',
                 url: route('clientes.index'),
