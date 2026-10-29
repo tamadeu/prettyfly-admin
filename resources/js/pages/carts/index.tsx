@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import DashboardLayout from '@/layout/dashboard';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Cart {
@@ -25,12 +27,44 @@ function CartsPage({ carts }: { carts: { data: Cart[]; total: number; current_pa
                 <TableCell>{cart.items.reduce((n, item) => n + item.quantity, 0)}</TableCell>
                 <TableCell>{money(cart.items.reduce((n, item) => n + item.quantity * item.price, 0))}</TableCell>
                 <TableCell>{new Date(cart.updated_at).toLocaleString('pt-BR')}</TableCell>
-                <TableCell><details><summary className="cursor-pointer">Ver dados</summary><div className="mt-3 min-w-64 space-y-3 whitespace-normal">
-                    <p className="text-muted-foreground text-xs">Iniciado em {new Date(cart.created_at).toLocaleString('pt-BR')}</p>
-                    {cart.items.map((item) => <p key={item.variantId}>{item.name} ({[item.color, item.size].filter(Boolean).join(' / ')}) × {item.quantity} — {money(item.quantity * item.price)}</p>)}
-                    {!cart.items.length && <p>Carrinho vazio</p>}
-                    <dl>{Object.entries(cart.checkout ?? {}).filter(([, value]) => value).map(([key, value]) => <div key={key} className="mb-2"><dt className="font-medium">{labels[key] || key}</dt><dd className="text-muted-foreground break-words">{value}</dd></div>)}</dl>
-                </div></details></TableCell>
+                <TableCell>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" aria-label={`Ver dados do carrinho #${cart.id}`}>Ver dados</Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-h-[90dvh] max-w-2xl overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle>Carrinho #{cart.id}</DialogTitle>
+                                <DialogDescription>Iniciado em {new Date(cart.created_at).toLocaleString('pt-BR')}. Última alteração em {new Date(cart.updated_at).toLocaleString('pt-BR')}.</DialogDescription>
+                            </DialogHeader>
+                            <section className="min-w-0 space-y-3">
+                                <h2 className="font-semibold">Produtos</h2>
+                                {cart.items.map((item) => <div key={item.variantId} className="flex items-start justify-between gap-4 border-b pb-3 text-sm">
+                                    <div className="min-w-0 break-words">
+                                        <p className="font-medium">{item.name}</p>
+                                        <p className="text-muted-foreground">{[item.color, item.size].filter(Boolean).join(' / ')}</p>
+                                        <p className="text-muted-foreground">Quantidade: {item.quantity}</p>
+                                    </div>
+                                    <p className="shrink-0">{money(item.quantity * item.price)}</p>
+                                </div>)}
+                                {!cart.items.length && <p className="text-muted-foreground text-sm">Carrinho vazio</p>}
+                                <div className="flex justify-between gap-4 font-medium"><span>Subtotal</span><span>{money(cart.items.reduce((n, item) => n + item.quantity * item.price, 0))}</span></div>
+                            </section>
+                            <section className="min-w-0 space-y-3 border-t pt-4">
+                                <h2 className="font-semibold">Dados do checkout</h2>
+                                {Object.values(cart.checkout ?? {}).some(Boolean) ? <dl className="grid gap-4 text-sm sm:grid-cols-2">
+                                    {Object.entries(cart.checkout ?? {}).filter(([, value]) => value).map(([key, value]) => <div key={key} className={key === 'notes' ? 'min-w-0 sm:col-span-2' : 'min-w-0'}>
+                                        <dt className="font-medium">{labels[key] || key}</dt>
+                                        <dd className="text-muted-foreground whitespace-pre-wrap break-words">{value}</dd>
+                                    </div>)}
+                                </dl> : <p className="text-muted-foreground text-sm">Nenhum dado de checkout preenchido.</p>}
+                            </section>
+                            <DialogFooter>
+                                <DialogClose asChild><Button variant="outline">Fechar</Button></DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </TableCell>
             </TableRow>)}{!carts.data.length && <TableRow><TableCell colSpan={6} className="py-12 text-center">Nenhum carrinho iniciado.</TableCell></TableRow>}</TableBody>
         </Table></div>
         <div className="flex items-center justify-between text-sm"><p>{carts.total} carrinhos · Página {carts.current_page} de {carts.last_page}</p><div className="flex gap-4">{carts.prev_page_url && <Link href={carts.prev_page_url}>Anterior</Link>}{carts.next_page_url && <Link href={carts.next_page_url}>Próxima</Link>}</div></div>
