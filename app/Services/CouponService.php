@@ -23,7 +23,11 @@ class CouponService
                 $this->fail('code', 'Este cupom não existe.');
             }
 
-            if ($coupon->per_customer_limit !== null && ! $user) {\n                $this->fail('code', 'Faça login para usar este cupom.');\n            }\n\n            $quote = $this->quote($coupon, $cart);
+            if ($coupon->per_customer_limit !== null && ! $user) {
+                $this->fail('code', 'Faça login para usar este cupom.');
+            }
+
+            $quote = $this->quote($coupon, $cart);
             $usage = CouponUsage::query()->where('coupon_id', $coupon->id)->where('cart_id', $cart->id)->lockForUpdate()->first();
             $this->assertCapacity($coupon, $user, $usage);
 
