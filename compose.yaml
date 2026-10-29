@@ -1,0 +1,76 @@
+name: laravel-shadcn
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laravel-shadcn-app
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:${APP_PORT:-8000}"
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: "${DB_DATABASE:-laravel}"
+      DB_USERNAME: "${DB_USERNAME:-laravel}"
+      DB_PASSWORD: "${DB_PASSWORD:-laravel}"
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: redis
+      REDIS_PASSWORD: "null"
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      REDIS_CACHE_DB: 1
+      SESSION_DRIVER: redis
+      SESSION_CONNECTION: default
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      MAIL_MAILER: log
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - app_storage:/var/www/html/storage/app
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    ports:
+      - "${DB_FORWARD_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: "${DB_DATABASE:-laravel}"
+      POSTGRES_USER: "${DB_USERNAME:-laravel}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-laravel}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-laravel} -d ${DB_DATABASE:-laravel}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "127.0.0.1:${REDIS_FORWARD_PORT:-6379}:6379"
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  app_storage:
+  postgres_data:
+  redis_data:

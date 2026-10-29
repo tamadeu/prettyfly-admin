@@ -1,0 +1,240 @@
+<p align="center">
+  <a href="https://laravel.com" target="_blank">
+    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="200" alt="Laravel Logo">
+  </a>
+  <a href="https://ui.shadcn.com" target="_blank">
+    <img src="https://ui.shadcn.com/apple-touch-icon.png" width="100" alt="shadcn/ui Logo" style="margin: 0 20px;">
+  </a>
+  <a href="https://inertiajs.com" target="_blank">
+    <img src="https://avatars.githubusercontent.com/u/47703742?s=200&v=4" width="100" alt="Inertia.js Logo">
+  </a>
+</p>
+
+# Laravel + shadcn/ui Starter
+
+A modern full-stack starter template combining the power of Laravel with the beautiful UI components of shadcn/ui and the seamless page transitions of Inertia.js.
+
+
+<p align="center">
+  <img src="screenshots/login.png" width="49%" alt="Login Page">
+  <img src="screenshots/register.png" width="49%" alt="Register Page">
+</p>
+
+<p align="center">
+  <img src="screenshots/forgot-password.png" width="49%" alt="Forgot Password Page">
+  <img src="screenshots/dashboard.png" width="49%" alt="Dashboard Page">
+</p>
+
+## Features
+
+- Pre-configured shadcn/ui components
+- Inertia.js for seamless SPA experience
+- TypeScript support out of the box
+- Dark mode ready
+- Responsive design
+- Fully implemented authentication flow (with email verification!)
+
+
+## Getting Started
+
+### Prerequisites
+
+- PHP 8.3 or higher
+- Composer
+- Node.js 18+ and npm/bun
+- SQLite (or your preferred database)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Kleppinger/laravel-shadcn-starter.git
+cd laravel-shadcn-starter
+```
+
+2. Install PHP dependencies:
+```bash
+composer install
+```
+
+3. Install JavaScript dependencies:
+```bash
+npm install
+# or using bun (recommended)
+bun install 
+```
+
+4. Copy the environment file and generate application key:
+```bash
+copy .env.example .env
+php artisan key:generate
+```
+
+> **Notice:** In the example, `MAIL_MAILER` is set to *preview*. If you dont want this, please configure a different viewer.
+
+5. Run database migrations:
+```bash
+php artisan migrate
+```
+
+6. Start the Vite and Laravel development server:
+```bash
+composer run dev
+```
+
+Visit `http://localhost:8000` in your browser.
+
+## Docker
+
+The application, PostgreSQL database and Redis can run entirely in containers.
+Docker Compose builds the frontend assets, generates the application key and
+runs the database migrations automatically. Redis stores sessions, cache and
+queued jobs.
+
+```bash
+docker compose up --build
+```
+
+Open `http://localhost:8000` after both services are ready.
+
+Docker Compose injects `DB_HOST=db` into the application container. Keep
+`127.0.0.1` only for running Laravel directly on the host; inside a container,
+`127.0.0.1` refers to the application container itself.
+
+Useful commands:
+
+```bash
+# Run an Artisan command
+docker compose exec app php artisan about
+
+# Follow application logs
+docker compose logs -f app
+
+# Check Redis connectivity
+docker compose exec redis redis-cli ping
+
+# Process queued jobs stored in Redis
+docker compose exec app php artisan queue:work
+
+# Stop the containers
+docker compose down
+
+# Stop and delete the PostgreSQL, Redis and upload volumes
+docker compose down -v
+```
+
+Ports and database credentials can be changed before startup:
+
+```bash
+APP_PORT=8080 DB_FORWARD_PORT=5433 REDIS_FORWARD_PORT=6380 DB_DATABASE=app DB_USERNAME=app DB_PASSWORD=secret docker compose up --build
+```
+
+Rebuild the application image after changing PHP or frontend source files.
+
+## Telescope
+
+Laravel Telescope is available at `http://localhost:8000/telescope` and all of
+its dashboard and API routes require an authenticated user. In Docker, use the
+configured `APP_PORT` instead of `8000` (for example,
+`http://localhost:8080/telescope`). Entries older than 48 hours are pruned by
+the daily scheduler.
+
+## Catalog API
+
+The read-only catalog API is versioned under `/api/v1` and requires a Bearer
+token. It only returns products that are both active and visible in the
+storefront; categories without published products are omitted.
+
+Generate a secret token and configure the same value as `CATALOG_API_TOKEN` in
+the admin application's environment:
+
+```bash
+php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
+```
+
+Keep this token server-side in the Next.js deployment. Do not expose it through
+a `NEXT_PUBLIC_` variable or call the API with the secret directly from browser
+code. Use a Server Component, server action, or Route Handler instead:
+
+```ts
+const response = await fetch(
+  `${process.env.CATALOG_API_URL}/api/v1/products`,
+  {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${process.env.CATALOG_API_TOKEN}`,
+    },
+    next: { revalidate: 60 },
+  },
+);
+
+if (!response.ok) {
+  throw new Error(`Catalog API returned ${response.status}`);
+}
+
+const catalog = await response.json();
+```
+
+Available endpoints (all require `Authorization: Bearer <token>`):
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/v1/products` | Paginated published products; supports `q`, `category` (slug), and `per_page` (1–100). |
+| `GET` | `/api/v1/products/{slug}` | Product details, ordered product images, specifications, variants, stock, price, logistics, and variant images. |
+| `GET` | `/api/v1/categories` | Paginated categories that have published products, including their published product count. |
+| `GET` | `/api/v1/categories/{slug}` | Category details; returns `404` if no products in it are published. |
+| `GET` | `/api/v1/categories/{slug}/products` | Paginated published products in a category; supports `q` and `per_page`. |
+
+Collection responses use Laravel's JSON resource pagination shape (`data`,
+`links`, and `meta`). The API is limited to 60 requests per minute per IP.
+
+## Configuration
+To easily disable/enable mail verification, just change the setting in `config/template.php`:
+
+```php
+<?php
+
+return [
+    'enable_verification' => true,
+];
+```
+
+## Development
+
+### Adding shadcn/ui Components
+
+Add new shadcn/ui components using the CLI:
+
+```bash
+npx shadcn@latest add button
+npx shadcn@latest add card
+# etc.
+```
+
+### Code Formatting
+
+Format your PHP code with Laravel Pint:
+
+```bash
+vendor/bin/pint
+```
+
+```bash
+php artisan test
+```
+
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Acknowledgments
+
+- [Laravel](https://laravel.com) - The PHP Framework
+- [Inertia.js](https://inertiajs.com) - The Modern Monolith
+- [shadcn/ui](https://ui.shadcn.com) - Beautiful UI Components
+- [Tailwind CSS](https://tailwindcss.com) - Utility-First CSS Framework

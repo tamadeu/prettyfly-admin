@@ -1,0 +1,635 @@
+[
+    {
+        "id": "nav-home",
+        "label": "Home",
+        "href": "/",
+        "type": "megamenu",
+        "megaMenu": [
+            {
+                "title": "Demo list 1",
+                "links": [
+                    {
+                        "label": "Elegant Fashion",
+                        "href": "/home/elegant-fashion-shop",
+                        "id": "hm-1"
+                    },
+                    {
+                        "label": "Mega Store",
+                        "href": "/home/megastore-shop",
+                        "id": "hm-2"
+                    },
+                    {
+                        "label": "Default Fashion",
+                        "href": "/",
+                        "id": "hm-3"
+                    },
+                    {
+                        "label": "Headphones",
+                        "href": "/home/headphones-shop",
+                        "id": "hm-6"
+                    },
+                    {
+                        "label": "Sneaker",
+                        "href": "/home/sneaker-shop",
+                        "id": "hm-10"
+                    },
+                    {
+                        "label": "Nutrition",
+                        "href": "/home/nutrition-shop",
+                        "id": "hm-16"
+                    },
+                    {
+                        "label": "Pizza",
+                        "href": "/home/pizza-shop",
+                        "id": "hm-17"
+                    }
+                ]
+            },
+            {
+                "title": "Demo list 2",
+                "links": [
+                    {
+                        "label": "Grocery Shop",
+                        "href": "/home/grocery-shop",
+                        "id": "hm-19"
+                    },
+                    {
+                        "label": "Pet Food",
+                        "href": "/home/pet-food-shop",
+                        "id": "hm-23"
+                    },
+                    {
+                        "label": "Skin Care",
+                        "href": "/home/skin-care-shop",
+                        "id": "hm-24"
+                    },
+                    {
+                        "label": "Lipstain",
+                        "href": "/home/lipstain-shop",
+                        "id": "hm-25"
+                    },
+                    {
+                        "label": "Jewelry 1",
+                        "href": "/home/jewellery-shop",
+                        "id": "hm-26"
+                    },
+                    {
+                        "label": "Car Accessories",
+                        "href": "/home/car-accessories-shop",
+                        "id": "hm-29"
+                    },
+                    {
+                        "label": "Furniture",
+                        "href": "/home/furniture-shop",
+                        "id": "hm-33"
+                    }
+                ]
+            },
+            {
+                "title": "Demo list 3",
+                "links": [
+                    {
+                        "label": "Plant & Garden",
+                        "href": "/home/plant-garden-shop",
+                        "id": "hm-34"
+                    },
+                    {
+                        "label": "Fashion 04",
+                        "href": "/home/fashion-04-shop",
+                        "id": "hm-13"
+                    },
+                    {
+                        "label": "Boutique Fashion",
+                        "href": "/home/boutique-fashion-shop",
+                        "id": "hm-4"
+                    },
+                    {
+                        "label": "Phone Case",
+                        "href": "/home/phone-case-shop",
+                        "id": "hm-5"
+                    },
+                    {
+                        "label": "Smart Watches",
+                        "href": "/home/smart-watches-shop",
+                        "id": "hm-7"
+                    },
+                    {
+                        "label": "Electronics store 2",
+                        "href": "/home/electronics-store-2-shop",
+                        "id": "hm-8"
+                    },
+                    {
+                        "label": "Single Product",
+                        "href": "/home/single-product-shop",
+                        "id": "hm-9"
+                    }
+                ]
+            },
+            {
+                "title": "Demo list 4",
+                "links": [
+                    {
+                        "label": "Footwear",
+                        "href": "/home/footwear-shop",
+                        "id": "hm-11"
+                    },
+                    {
+                        "label": "Fashion 03",
+                        "href": "/home/fashion-03-shop",
+                        "id": "hm-12"
+                    },
+                    {
+                        "label": "Activewear",
+                        "href": "/home/active-wear-shop",
+                        "id": "hm-15"
+                    },
+                    {
+                        "label": "Coffee",
+                        "href": "/home/coffee-shop",
+                        "id": "hm-18"
+                    },
+                    {
+                        "label": "Basketball",
+                        "href": "/home/basketball-shop",
+                        "id": "hm-30"
+                    },
+                    {
+                        "label": "Backpack",
+                        "href": "/home/backpack-shop",
+                        "id": "hm-22"
+                    },
+                    {
+                        "label": "Jewelry 2",
+                        "href": "/home/jewelry-2-shop",
+                        "id": "hm-27"
+                    }
+                ]
+            },
+            {
+                "title": "Demo list 5",
+                "links": [
+                    {
+                        "label": "POD",
+                        "href": "/home/pod-shop",
+                        "id": "hm-35"
+                    },
+                    {
+                        "label": "Glasses",
+                        "href": "/home/glasses-shop",
+                        "id": "hm-36"
+                    },
+                    {
+                        "label": "Plumbing Supplies",
+                        "href": "/home/plumbing-supplies-shop",
+                        "id": "hm-37"
+                    },
+                    {
+                        "label": "Craft and Decore",
+                        "href": "/home/craft-and-decore-shop",
+                        "id": "hm-38"
+                    },
+                    {
+                        "label": "Socks",
+                        "href": "/home/socks-shop",
+                        "id": "hm-40"
+                    },
+                    {
+                        "label": "Toys",
+                        "href": "/home/toys-shop",
+                        "id": "hm-41"
+                    },
+                    {
+                        "label": "RTL Demo",
+                        "href": "/home/rtl-demo-shop",
+                        "id": "hm-39"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "nav-shop",
+        "label": "Shop",
+        "href": "/shop",
+        "type": "megamenu",
+        "megaMenu": [
+            {
+                "title": "Shop Layouts",
+                "links": [
+                    {
+                        "id": "shop-1",
+                        "label": "Filter sidebar",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "shop-2",
+                        "label": "Filter drawer",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "shop-3",
+                        "label": "Filter horizontal",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "shop-4",
+                        "label": "Full width",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "shop-5",
+                        "label": "Product 4 columns",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "shop-6",
+                        "label": "Product 3 columns",
+                        "href": "/shop"
+                    }
+                ]
+            },
+            {
+                "title": "Product Layouts",
+                "links": [
+                    {
+                        "id": "prod-1",
+                        "label": "Thumbnails Slider",
+                        "href": "/products/casual-chambray-shirt"
+                    },
+                    {
+                        "id": "prod-2",
+                        "label": "Product stacked",
+                        "href": "/products/red-maxi-dress"
+                    },
+                    {
+                        "id": "prod-3",
+                        "label": "Thumbnails 2 columns",
+                        "href": "/products/classic-wrap-dress"
+                    },
+                    {
+                        "id": "prod-4",
+                        "label": "Product thumbnails",
+                        "href": "/products/satin-symphony-skirt"
+                    },
+                    {
+                        "id": "prod-5",
+                        "label": "Product cart sticky",
+                        "href": "/products/active-gym-shorts"
+                    },
+                    {
+                        "id": "prod-6",
+                        "label": "Product large media",
+                        "href": "/products/black-silk-wrap-skirt"
+                    }
+                ]
+            },
+            {
+                "title": "Collections",
+                "links": [
+                    {
+                        "id": "col-1",
+                        "label": "Collection list",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "col-2",
+                        "label": "New Collection",
+                        "href": "/shop?sort=newest"
+                    },
+                    {
+                        "id": "col-3",
+                        "label": "Trending Collection",
+                        "href": "/shop?sort=best-selling"
+                    },
+                    {
+                        "id": "col-4",
+                        "label": "Featured Collection",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "col-5",
+                        "label": "On Sale",
+                        "href": "/shop?availability=in-stock"
+                    },
+                    {
+                        "id": "col-6",
+                        "label": "Bestseller",
+                        "href": "/shop?sort=best-selling"
+                    }
+                ]
+            },
+            {
+                "title": "Explore More",
+                "links": [
+                    {
+                        "id": "exp-1",
+                        "label": "Collection banner",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "exp-2",
+                        "label": "Collection sorting",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "exp-3",
+                        "label": "Advanced filters",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "exp-4",
+                        "label": "Price Slider",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "exp-5",
+                        "label": "Slider input",
+                        "href": "/shop"
+                    },
+                    {
+                        "id": "exp-6",
+                        "label": "Ajax Filter",
+                        "href": "/shop"
+                    }
+                ]
+            }
+        ],
+        "megaImage": {
+            "src": "/fashion/shop-mega-menu/shop-mega-menu1.png",
+            "alt": "Shop promotion",
+            "title": "UP TO 70% OFF",
+            "subtitle": "SHOP NOW"
+        }
+    },
+    {
+        "id": "nav-categories",
+        "label": "Categories",
+        "href": "/collections",
+        "type": "megamenu",
+        "megaCategoryCards": [
+            {
+                "id": "ccard-1",
+                "label": "Knit Wears",
+                "itemCount": 17,
+                "image": "/fashion/categories-mega-menu/categories-mega-menu1.webp",
+                "href": "/shop?category=Knitwear"
+            },
+            {
+                "id": "ccard-2",
+                "label": "Formal Wear",
+                "itemCount": 16,
+                "image": "/fashion/categories-mega-menu/categories-mega-menu2.webp",
+                "href": "/shop?category=Dresses"
+            },
+            {
+                "id": "ccard-3",
+                "label": "Casual Wear",
+                "itemCount": 22,
+                "image": "/fashion/categories-mega-menu/categories-mega-menu3.webp",
+                "href": "/shop?category=Tops"
+            },
+            {
+                "id": "ccard-4",
+                "label": "Activewear",
+                "itemCount": 12,
+                "image": "/fashion/categories-mega-menu/categories-mega-menu4.webp",
+                "href": "/shop?category=Activewear"
+            },
+            {
+                "id": "ccard-5",
+                "label": "Accessories",
+                "itemCount": 19,
+                "image": "/fashion/categories-mega-menu/categories-mega-menu5.webp",
+                "href": "/shop?category=Accessories"
+            }
+        ]
+    },
+    {
+        "id": "nav-products",
+        "label": "Products",
+        "href": "/products/casual-chambray-shirt",
+        "type": "megamenu",
+        "megaMenu": [
+            {
+                "title": "Product Layout",
+                "links": [
+                    {
+                        "id": "pl-1",
+                        "label": "Default layout",
+                        "href": "/products/casual-chambray-shirt"
+                    },
+                    {
+                        "id": "pl-2",
+                        "label": "Variant swatch",
+                        "href": "/products/red-maxi-dress"
+                    },
+                    {
+                        "id": "pl-3",
+                        "label": "Variant dropdown",
+                        "href": "/products/classic-wrap-dress"
+                    },
+                    {
+                        "id": "pl-4",
+                        "label": "Product tab",
+                        "href": "/products/satin-symphony-skirt"
+                    },
+                    {
+                        "id": "pl-5",
+                        "label": "Product accordion",
+                        "href": "/products/active-gym-shorts"
+                    },
+                    {
+                        "id": "pl-6",
+                        "label": "Product media gallery",
+                        "href": "/products/black-silk-wrap-skirt"
+                    },
+                    {
+                        "id": "pl-7",
+                        "label": "Product recommendations",
+                        "href": "/products/bohemian-maxi-dress"
+                    }
+                ]
+            },
+            {
+                "title": "Product Types",
+                "links": [
+                    {
+                        "id": "pt-1",
+                        "label": "Simple product",
+                        "href": "/products/casual-chambray-shirt"
+                    },
+                    {
+                        "id": "pt-2",
+                        "label": "Variable product",
+                        "href": "/products/red-maxi-dress"
+                    },
+                    {
+                        "id": "pt-3",
+                        "label": "Product video",
+                        "href": "/products/classic-wrap-dress"
+                    },
+                    {
+                        "id": "pt-4",
+                        "label": "Product 3D, AR models",
+                        "href": "/products/satin-symphony-skirt"
+                    },
+                    {
+                        "id": "pt-5",
+                        "label": "Product color swatches",
+                        "href": "/products/active-gym-shorts"
+                    },
+                    {
+                        "id": "pt-6",
+                        "label": "Product image swatches",
+                        "href": "/products/black-silk-wrap-skirt"
+                    }
+                ]
+            },
+            {
+                "title": "Product Features",
+                "links": [
+                    {
+                        "id": "pf-1",
+                        "label": "Ask a question",
+                        "href": "/products/casual-chambray-shirt"
+                    },
+                    {
+                        "id": "pf-2",
+                        "label": "Local pickup available",
+                        "href": "/products/red-maxi-dress"
+                    },
+                    {
+                        "id": "pf-3",
+                        "label": "Share product",
+                        "href": "/products/classic-wrap-dress"
+                    },
+                    {
+                        "id": "pf-4",
+                        "label": "Pre-order product",
+                        "href": "/products/satin-symphony-skirt"
+                    },
+                    {
+                        "id": "pf-5",
+                        "label": "Product collapsible tabs",
+                        "href": "/products/active-gym-shorts"
+                    },
+                    {
+                        "id": "pf-6",
+                        "label": "Product terms & conditions",
+                        "href": "/products/black-silk-wrap-skirt"
+                    },
+                    {
+                        "id": "pf-7",
+                        "label": "Dynamic checkout button",
+                        "href": "/products/bohemian-maxi-dress"
+                    }
+                ]
+            },
+            {
+                "title": "Exclusive Features",
+                "links": [
+                    {
+                        "id": "ef-1",
+                        "label": "Size guide popup",
+                        "href": "/products/casual-chambray-shirt"
+                    },
+                    {
+                        "id": "ef-2",
+                        "label": "Sticky add to cart",
+                        "href": "/products/red-maxi-dress"
+                    },
+                    {
+                        "id": "ef-3",
+                        "label": "Frequently Bought Together",
+                        "href": "/products/classic-wrap-dress"
+                    },
+                    {
+                        "id": "ef-4",
+                        "label": "Advanced custom fields",
+                        "href": "/products/satin-symphony-skirt"
+                    },
+                    {
+                        "id": "ef-5",
+                        "label": "Stock counter",
+                        "href": "/products/active-gym-shorts"
+                    },
+                    {
+                        "id": "ef-6",
+                        "label": "Countdown timer",
+                        "href": "/products/black-silk-wrap-skirt"
+                    },
+                    {
+                        "id": "ef-7",
+                        "label": "Back in stock alert",
+                        "href": "/products/bohemian-maxi-dress"
+                    }
+                ]
+            }
+        ],
+        "megaProductSlider": true
+    },
+    {
+        "id": "nav-blog",
+        "label": "Blog",
+        "href": "/blog",
+        "type": "link"
+    },
+    {
+        "id": "nav-pages",
+        "label": "Pages",
+        "href": "#",
+        "type": "dropdown",
+        "children": [
+            {
+                "id": "pg-1",
+                "label": "About us",
+                "href": "/pages/about"
+            },
+            {
+                "id": "pg-2",
+                "label": "Contact",
+                "href": "/pages/contact"
+            },
+            {
+                "id": "pg-3",
+                "label": "FAQ",
+                "href": "/pages/faq"
+            },
+            {
+                "id": "pg-4",
+                "label": "Store Location",
+                "href": "/pages/store-location"
+            },
+            {
+                "id": "pg-5",
+                "label": "Wishlist",
+                "href": "/wishlist"
+            },
+            {
+                "id": "pg-6",
+                "label": "Compare",
+                "href": "/compare"
+            },
+            {
+                "id": "pg-7",
+                "label": "404",
+                "href": "/pages/404"
+            },
+            {
+                "id": "pg-8",
+                "label": "Privacy policy",
+                "href": "/pages/privacy-policy"
+            },
+            {
+                "id": "pg-9",
+                "label": "Terms of Service",
+                "href": "/pages/terms-of-service"
+            },
+            {
+                "id": "pg-10",
+                "label": "Refund Policy",
+                "href": "/pages/refund-policy"
+            }
+        ]
+    }
+]
