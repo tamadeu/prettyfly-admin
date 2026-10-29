@@ -115,7 +115,7 @@ class CustomerAuthController extends Controller
                 },
             );
         } catch (\Throwable $e) {
-            Log::error('Falha ao enviar e-mail de redefinição de senha: '.$e->getMessage());
+            $this->logMailFailure('redefinição de senha', $e, ['email' => $data['email']]);
         }
 
         // Resposta idêntica para existir ou não: evita descobrir e-mails cadastrados.
@@ -179,24 +179,53 @@ class CustomerAuthController extends Controller
             return new JsonResponse(['message' => 'E-mail já confirmado.']);
         }
 
-        if (! $this->sendVerification($user)) {
-            return new JsonResponse(['message' => 'Não foi possível enviar o e-mail agora.'], 503);
+        if (! $this->sendVerification($user, $error)) {
+            return new JsonResponse(array_filter([
+                'message' => 'Não foi possível enviar o e-mail agora.',
+                'debug' => config('app.debug') ? $error : null,
+            ]), 503);
         }
 
         return new JsonResponse(['message' => 'E-mail de confirmação enviado.']);
     }
 
-    private function sendVerification(User $user): bool
+    private function sendVerification(User $user, ?string &$error = null): bool
     {
         try {
             $user->notify(new CustomerVerifyEmail);
 
             return true;
         } catch (\Throwable $e) {
-            Log::error('Falha ao enviar e-mail de verificação: '.$e->getMessage());
+            $error = $this->logMailFailure('verificação de e-mail', $e, ['user_id' => $user->id]);
 
             return false;
         }
+    }
+
+    /** Registra a falha com a cadeia de causas e a config SMTP (sem senha) e devolve um resumo. */
+    private function logMailFailure(string $what, \Throwable $e, array $context = []): string
+    {
+        $chain = [];
+        for ($t = $e; $t; $t = $t->getPrevious()) {
+            $chain[] = get_class($t).': '.$t->getMessage();
+        }
+
+        $mailer = config('mail.default');
+        $smtp = config("mail.mailers.$mailer", []);
+
+        Log::error("Falha ao enviar e-mail de $what", $context + [
+            'causes' => $chain,
+            'mailer' => $mailer,
+            'host' => $smtp['host'] ?? null,
+            'port' => $smtp['port'] ?? null,
+            'scheme' => $smtp['scheme'] ?? null,
+            'username' => $smtp['username'] ?? null,
+            'timeout' => $smtp['timeout'] ?? null,
+            'from' => config('mail.from.address'),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return implode(' <- ', $chain);
     }
 
     private function session(User $user, int $status = 200): JsonResponse

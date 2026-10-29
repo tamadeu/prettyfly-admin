@@ -225,4 +225,28 @@ class CustomersTest extends TestCase
         $this->getJson('/api/v1/customers/me/wishlist', $this->loggedHeaders('bia@example.com'))->assertJsonCount(0, 'data');
         $this->getJson('/api/v1/customers/me/wishlist', $h)->assertJsonCount(1, 'data');
     }
+
+    public function test_resend_failure_exposes_cause_only_in_debug(): void
+    {
+        config([
+            'catalog.api_token' => str_repeat('a', 40),
+            'mail.default' => 'smtp',
+            'mail.mailers.smtp.host' => '127.0.0.1',
+            'mail.mailers.smtp.port' => 1,
+            'mail.mailers.smtp.timeout' => 2,
+        ]);
+        $api = ['Authorization' => 'Bearer '.str_repeat('a', 40)];
+        $token = $this->postJson('/api/v1/customers/register', [
+            'name' => 'Ana', 'email' => 'ana-fail@example.test', 'password' => 'senha-forte-123',
+        ], $api)->json('token');
+        $h = $api + ['X-Customer-Token' => $token];
+
+        config(['app.debug' => true]);
+        $this->postJson('/api/v1/customers/email/resend', [], $h)
+            ->assertStatus(503)->assertJsonStructure(['message', 'debug']);
+
+        config(['app.debug' => false]);
+        $this->postJson('/api/v1/customers/email/resend', [], $h)
+            ->assertStatus(503)->assertJsonMissingPath('debug');
+    }
 }
