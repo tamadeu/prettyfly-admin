@@ -23,7 +23,7 @@ class CouponService
                 $this->fail('code', 'Este cupom não existe.');
             }
 
-            $quote = $this->quote($coupon, $cart);
+            if ($coupon->per_customer_limit !== null && ! $user) {\n                $this->fail('code', 'Faça login para usar este cupom.');\n            }\n\n            $quote = $this->quote($coupon, $cart);
             $usage = CouponUsage::query()->where('coupon_id', $coupon->id)->where('cart_id', $cart->id)->lockForUpdate()->first();
             $this->assertCapacity($coupon, $user, $usage);
 
@@ -39,6 +39,32 @@ class CouponService
             ])->save();
 
             return $quote;
+        }, 3);
+    }
+
+    /**
+     * Finalize a reservation from the order/checkout flow when that flow is implemented.
+     */
+    public function redeem(Cart $cart): void
+    {
+        DB::transaction(function () use ($cart): void {
+            $usage = CouponUsage::query()
+                ->where('cart_id', $cart->id)
+                ->where('coupon_id', $cart->coupon_id)
+                ->where('status', CouponUsage::RESERVED)
+                ->where('expires_at', '>', now())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $usage) {
+                $this->fail('code', 'A reserva do cupom expirou. Aplique o cupom novamente.');
+            }
+
+            $usage->update([
+                'status' => CouponUsage::REDEEMED,
+                'redeemed_at' => now(),
+                'expires_at' => null,
+            ]);
         }, 3);
     }
 
