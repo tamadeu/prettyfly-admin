@@ -18,6 +18,16 @@ class Customer extends Model
         ];
     }
 
+    public function addresses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CustomerAddress::class)->orderByDesc('is_default')->orderBy('id');
+    }
+
+    public function wishlistItems(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CustomerWishlistItem::class)->orderBy('id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

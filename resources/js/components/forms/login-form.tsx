@@ -2,7 +2,6 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
     Field,
-    FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
@@ -104,17 +103,6 @@ export function LoginForm({
                             ? __('auth.login.submit_button_processing')
                             : __('auth.login.submit_button')}
                     </Button>
-                </Field>
-                <Field>
-                    <FieldDescription className="text-center">
-                        {__('auth.login.no_account')}{' '}
-                        <Link
-                            href={route('register')}
-                            className="underline underline-offset-4"
-                        >
-                            {__('auth.login.sign_up_link')}
-                        </Link>
-                    </FieldDescription>
                 </Field>
             </FieldGroup>
         </form>

@@ -37,6 +37,12 @@ class ResetPasswordController extends Controller
     /**
      * Display the password reset view for the given token.
      */
+    protected function credentials(Request $request): array
+    {
+        return $request->only('email', 'password', 'password_confirmation', 'token')
+            + ['type' => \App\Models\User::TYPE_ADMIN];
+    }
+
     public function showResetForm(Request $request): Response
     {
         $token = $request->route()->parameter('token');

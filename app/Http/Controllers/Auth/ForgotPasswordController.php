@@ -27,6 +27,11 @@ class ForgotPasswordController extends Controller
     /**
      * Display the form to request a password reset link.
      */
+    protected function credentials(Request $request): array
+    {
+        return $request->only('email') + ['type' => \App\Models\User::TYPE_ADMIN];
+    }
+
     public function showLinkRequestForm(): Response
     {
         syncLangFiles('auth');

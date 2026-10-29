@@ -16,6 +16,7 @@ class CustomerResource extends JsonResource
             'id' => $customer?->id,
             'name' => $this->resource->name,
             'email' => $this->resource->email,
+            'email_verified' => $this->resource->email_verified_at !== null,
             'phone' => $customer?->phone,
             'document' => $customer?->document,
             'birth_date' => $customer?->birth_date?->format('Y-m-d'),
