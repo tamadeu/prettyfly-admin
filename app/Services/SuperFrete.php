@@ -54,7 +54,7 @@ class SuperFrete
             'options' => ['own_hand' => false, 'receipt' => false, 'insurance_value' => $valueCents / 100, 'use_insurance_value' => true],
             'products' => $products,
         ];
-        $fingerprint = hash('sha256', json_encode([$payload, $this->inputKey($cart), $settings->environment, $settings->contact_email, hash('sha256', $settings->token)]));
+        $fingerprint = hash('sha256', json_encode([$payload, $this->inputKey($cart), $settings->environment, $settings->contact_email, hash('sha256', $settings->token), $settings->freeShippingPolicy()]));
 
         return [$settings, $payload, $fingerprint];
     }
@@ -105,13 +105,18 @@ class SuperFrete
                 }
                 $options[$id] = [
                     'id' => $id, 'name' => (string) $row['name'], 'company' => (string) ($row['company']['name'] ?? ''),
-                    'price' => round((float) $price, 2), 'delivery_days' => (int) $days,
+                    'price' => round((float) $price, 2), 'carrier_price' => round((float) $price, 2), 'free_shipping' => false, 'delivery_days' => (int) $days,
                     // Preservar os volumes calculados para uma futura emissão de etiqueta.
                     'packages' => $row['packages'] ?? [],
                 ];
             }
             $options = array_values($options);
             usort($options, fn ($a, $b) => $a['price'] <=> $b['price']);
+            $policy = $settings->freeShippingPolicy();
+            if ($options && $policy && (int) round($payload['options']['insurance_value'] * 100) >= (int) round($policy['minimum'] * 100)) {
+                $options[0]['price'] = 0;
+                $options[0]['free_shipping'] = true;
+            }
 
             return ['options' => $options, 'expires_at' => now()->addMinutes(10)->toIso8601String()];
         });
@@ -126,7 +131,7 @@ class SuperFrete
         }
 
         return collect($shipping)->only(['quote_id', 'input_key', 'environment', 'expires_at', 'selected_id'])->all() + [
-            'options' => array_map(fn ($option) => collect($option)->except('packages')->all(), $shipping['options']),
+            'options' => array_map(fn ($option) => collect($option)->except(['packages', 'carrier_price'])->all(), $shipping['options']),
         ];
     }
 }

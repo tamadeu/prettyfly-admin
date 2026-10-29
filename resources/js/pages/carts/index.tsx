@@ -59,7 +59,7 @@ function CartsPage({ carts }: { carts: { data: Cart[]; total: number; current_pa
                                 <h2 className="font-semibold">Resumo dos custos</h2>
                                 <dl className="space-y-3 text-sm">
                                     <div className="flex justify-between gap-4"><dt>Subtotal dos produtos</dt><dd className="shrink-0 tabular-nums">{money(subtotal)}</dd></div>
-                                    <div className="flex justify-between gap-4"><dt>Frete{delivery && <span className="text-muted-foreground block text-xs">{delivery.company} · {delivery.name}</span>}</dt><dd className="shrink-0 tabular-nums">{delivery ? money(delivery.price) : 'A definir'}</dd></div>
+                                    <div className="flex justify-between gap-4"><dt>Frete{delivery && <span className="text-muted-foreground block text-xs">{delivery.company} · {delivery.name}</span>}</dt><dd className="shrink-0 tabular-nums">{delivery ? (delivery.price === 0 ? 'Grátis' : money(delivery.price)) : 'A definir'}</dd></div>
                                     <div className="flex justify-between gap-4 border-t pt-3 text-base font-semibold"><dt>{delivery ? 'Total com frete' : 'Total dos produtos'}</dt><dd className="shrink-0 tabular-nums">{money(subtotal + (delivery?.price ?? 0))}</dd></div>
                                 </dl>
                                 {cart.shipping && <div className="text-muted-foreground space-y-2 border-t pt-3 text-xs">

@@ -161,4 +161,88 @@ class ShippingTest extends TestCase
         $this->actingAs($admin)->put('/configuracoes/frete', array_replace($settings, ['contact_email' => 'invalid']))->assertSessionHasErrors('contact_email');
         $this->assertNull(session('_old_input.token'));
     }
+
+    public function test_free_shipping_applies_at_minimum_only_to_cheapest_available_option(): void
+    {
+        $cart = $this->setupCart();
+        ShippingSetting::first()->update(['free_shipping_enabled' => true, 'free_shipping_minimum' => 140]);
+        // A ordem do provedor não determina a opção grátis.
+        Http::fake(['*' => Http::response(array_reverse($this->rates()))]);
+        $this->quote($cart)->assertOk()
+            ->assertJsonPath('data.free_shipping_policy.minimum', 140)
+            ->assertJsonPath('data.shipping.options.0.id', '1')
+            ->assertJsonPath('data.shipping.options.0.price', 0)
+            ->assertJsonPath('data.shipping.options.0.free_shipping', true)
+            ->assertJsonPath('data.shipping.options.1.price', 25.5)
+            ->assertJsonMissingPath('data.shipping.options.0.carrier_price');
+        $this->assertEquals(18.61, $cart->fresh()->shipping['options'][0]['carrier_price']);
+        $this->assertNotEmpty($cart->fresh()->shipping['options'][0]['packages']);
+        $this->select($cart)->assertOk()->assertJsonPath('data.shipping.selected_id', '1');
+        $this->getJson('/api/v1/cart', $this->headers())->assertJsonPath('data.shipping.options.0.price', 0);
+        $this->select($cart, '2')->assertOk()->assertJsonPath('data.shipping.options.1.price', 25.5);
+        Http::assertSentCount(1);
+    }
+
+    public function test_free_shipping_threshold_uses_catalog_prices_and_rechecks_quantity(): void
+    {
+        $cart = $this->setupCart();
+        ShippingSetting::first()->update(['free_shipping_enabled' => true, 'free_shipping_minimum' => 140.01]);
+        Http::fake(['*' => Http::response($this->rates())]);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.shipping.options.0.price', 18.61);
+        $items = $cart->fresh()->items;
+        $items[0]['price'] = 1000;
+        $this->putJson('/api/v1/cart', ['version' => $cart->fresh()->version, 'owner' => 'guest', 'items' => $items], $this->headers())->assertOk()->assertJsonPath('data.items.0.price', 70);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.shipping.options.0.price', 18.61);
+        $items[0]['quantity'] = 3;
+        $this->putJson('/api/v1/cart', ['version' => $cart->fresh()->version, 'owner' => 'guest', 'items' => $items], $this->headers())->assertOk()->assertJsonPath('data.shipping', null);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.shipping.options.0.price', 0);
+        $this->select($cart)->assertOk();
+        $items[0]['quantity'] = 1;
+        $this->putJson('/api/v1/cart', ['version' => $cart->fresh()->version, 'owner' => 'guest', 'items' => $items], $this->headers())->assertOk()->assertJsonPath('data.shipping', null);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.shipping.options.0.price', 18.61)->assertJsonPath('data.shipping.selected_id', null);
+    }
+
+    public function test_free_shipping_setting_changes_invalidate_saved_selection_and_cache(): void
+    {
+        $cart = $this->setupCart();
+        Http::fake(['*' => Http::response($this->rates())]);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.free_shipping_policy', null);
+        ShippingSetting::first()->update(['free_shipping_enabled' => true, 'free_shipping_minimum' => 0]);
+        $this->select($cart)->assertStatus(409);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.shipping.options.0.price', 0);
+        $this->select($cart)->assertOk();
+        ShippingSetting::first()->update(['free_shipping_minimum' => 200]);
+        $this->getJson('/api/v1/cart', $this->headers())->assertJsonPath('data.shipping', null);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.shipping.options.0.price', 18.61);
+        ShippingSetting::first()->update(['free_shipping_enabled' => false]);
+        $this->getJson('/api/v1/cart', $this->headers())->assertJsonPath('data.free_shipping_policy', null)->assertJsonPath('data.shipping', null);
+        $this->quote($cart)->assertOk()->assertJsonPath('data.shipping.options.0.price', 18.61);
+        ShippingSetting::first()->update(['free_shipping_enabled' => true, 'enabled' => false]);
+        $this->getJson('/api/v1/cart', $this->headers())->assertJsonPath('data.free_shipping_policy', null);
+    }
+
+    public function test_free_shipping_requires_an_available_service(): void
+    {
+        $cart = $this->setupCart();
+        ShippingSetting::first()->update(['free_shipping_enabled' => true, 'free_shipping_minimum' => 0]);
+        Http::fake(['*' => Http::response([['id' => 1, 'name' => 'PAC', 'has_error' => true]])]);
+        $this->quote($cart)->assertOk()->assertJsonCount(0, 'data.shipping.options');
+        $this->select($cart)->assertUnprocessable();
+    }
+
+    public function test_admin_can_configure_free_shipping_and_must_supply_a_valid_minimum(): void
+    {
+        $admin = User::factory()->create();
+        $data = ['enabled' => false, 'environment' => 'sandbox', 'origin_postal_code' => '05083010', 'services' => ['1'], 'free_shipping_enabled' => true];
+        foreach ([null, -1, 'abc', '100.001', '100000000'] as $minimum) {
+            $this->actingAs($admin)->put('/configuracoes/frete', $data + ['free_shipping_minimum' => $minimum])->assertSessionHasErrors('free_shipping_minimum');
+        }
+        foreach (['299.90', '0'] as $minimum) {
+            $this->actingAs($admin)->put('/configuracoes/frete', $data + ['free_shipping_minimum' => $minimum])->assertSessionHasNoErrors();
+            $this->assertTrue(ShippingSetting::first()->free_shipping_enabled);
+            $this->assertEquals((float) $minimum, (float) ShippingSetting::first()->free_shipping_minimum);
+        }
+        $this->actingAs($admin)->put('/configuracoes/frete', array_replace($data, ['free_shipping_enabled' => false, 'free_shipping_minimum' => null]))->assertSessionHasNoErrors();
+        $this->assertFalse(ShippingSetting::first()->free_shipping_enabled);
+    }
 }

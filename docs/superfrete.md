@@ -13,6 +13,16 @@ A integração começa desativada e sem credenciais. Token vazio ao editar mant�
 
 As variantes devem ter peso em **kg** e altura, largura e comprimento em **cm**, todos maiores que zero. Não são inventadas medidas quando o cadastro está incompleto.
 
+## Frete grátis
+
+Em **Configurações → Frete**, ative **Oferecer frete grátis** e informe o **valor mínimo em produtos (R$)**. A regra começa desativada; não há um valor mínimo predefinido. O valor 0 permite oferecer o benefício sem mínimo.
+
+A regra vale para todo o Brasil, na opção mais barata disponível entre os serviços habilitados. Ao atingir ou superar o mínimo, apenas essa opção passa a custar zero para o cliente; as outras mantêm seus preços. A loja assume o custo do envio. O SuperFrete continua necessário para verificar cobertura, prazo e volumes, e nenhuma opção é criada quando não há serviço disponível.
+
+O mínimo considera os preços atuais do catálogo e as quantidades, em centavos, sem somar o frete. O custo original do provedor fica salvo em `carrier_price` para uso interno; `price` representa o valor cobrado do cliente. A resposta pública não expõe o custo interno. A escolha grátis é salva e exibida como **Grátis** no checkout e no admin.
+
+O carrinho, o minicarrinho e o checkout mostram quanto falta para atingir o mínimo. Alterações na regra ou nos produtos invalidam a cotação e a seleção anteriores. Desativar a integração também remove a oferta pública. A política chega ao site em `free_shipping_policy` nas respostas do carrinho, sem credenciais. A migration `2026_10_29_235000_add_free_shipping_to_shipping_settings.php` adiciona os campos sem alterar as credenciais existentes.
+
 ## Funcionamento
 
 O checkout consulta automaticamente após o CEP e os produtos serem salvos. O backend envia `products`, permitindo ao SuperFrete calcular os volumes. A consulta usa o valor do catálogo como valor declarado, com seguro habilitado, sem mão própria nem aviso de recebimento.

@@ -16,7 +16,7 @@ class ShippingSettingsController extends Controller
     {
         $settings = ShippingSetting::current();
 
-        return Inertia::render('settings/shipping', ['settings' => $settings->only(['enabled', 'environment', 'origin_postal_code', 'contact_email', 'services']) + ['has_token' => filled($settings->token)]]);
+        return Inertia::render('settings/shipping', ['settings' => $settings->only(['enabled', 'environment', 'origin_postal_code', 'contact_email', 'services', 'free_shipping_enabled', 'free_shipping_minimum']) + ['has_token' => filled($settings->token)]]);
     }
 
     public function update(Request $request): RedirectResponse
@@ -24,6 +24,8 @@ class ShippingSettingsController extends Controller
         $request->merge(['origin_postal_code' => preg_replace('/\D/', '', (string) $request->input('origin_postal_code'))]);
         $data = $request->validate([
             'enabled' => ['required', 'boolean'],
+            'free_shipping_enabled' => ['sometimes', 'boolean'],
+            'free_shipping_minimum' => ['nullable', 'required_if:free_shipping_enabled,true', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
             'environment' => ['required', Rule::in(['sandbox', 'production'])],
             'origin_postal_code' => ['required', 'regex:/^\d{8}$/'],
             'contact_email' => ['nullable', 'required_if:enabled,true', 'email', 'max:254'],

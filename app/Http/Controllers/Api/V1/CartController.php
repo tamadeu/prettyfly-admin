@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CustomerToken;
 use App\Models\ProductVariant;
+use App\Models\ShippingSetting;
 use App\Models\User;
 use App\Services\SuperFrete;
 use Illuminate\Http\JsonResponse;
@@ -162,6 +163,6 @@ class CartController extends Controller
         $frete = app(SuperFrete::class);
         $shipping = $cart && $frete->isCurrent($cart, $cart->shipping) ? $frete->publicQuote($cart->shipping) : null;
 
-        return ['shipping' => $shipping, 'id' => $cart?->id, 'version' => $cart?->version ?? 0, 'owner' => $owner, 'items' => $cart?->items ?? [], 'checkout' => (object) array_map(fn ($value) => $value ?? '', $cart?->checkout ?? [])];
+        return ['free_shipping_policy' => ShippingSetting::current()->freeShippingPolicy(), 'shipping' => $shipping, 'id' => $cart?->id, 'version' => $cart?->version ?? 0, 'owner' => $owner, 'items' => $cart?->items ?? [], 'checkout' => (object) array_map(fn ($value) => $value ?? '', $cart?->checkout ?? [])];
     }
 }
