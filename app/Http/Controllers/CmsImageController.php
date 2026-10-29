@@ -17,12 +17,12 @@ class CmsImageController extends Controller
             'image.max' => 'A imagem deve ter no máximo 5 MB.',
         ]);
 
-        $path = $request->file('image')->store('cms', 'public');
+        $path = $request->file('image')->store('cms', config('filesystems.uploads'));
 
         if ($path === false) {
             return response()->json(['message' => 'Não foi possível armazenar a imagem enviada.'], 500);
         }
 
-        return response()->json(['url' => Storage::disk('public')->url($path)], 201);
+        return response()->json(['url' => Storage::disk(config('filesystems.uploads'))->url($path)], 201);
     }
 }

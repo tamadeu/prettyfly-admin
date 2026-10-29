@@ -15,6 +15,9 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+    // Disk used for public uploads (product and CMS images).
+    'uploads' => env('UPLOADS_DISK', 'public'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -56,6 +59,20 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'rustfs' => [
+            'driver' => 's3',
+            'key' => env('RUSTFS_ACCESS_KEY'),
+            'secret' => env('RUSTFS_SECRET_KEY'),
+            'region' => env('RUSTFS_REGION', 'us-east-1'),
+            'bucket' => env('RUSTFS_BUCKET'),
+            'url' => env('RUSTFS_URL'),
+            'endpoint' => env('RUSTFS_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],

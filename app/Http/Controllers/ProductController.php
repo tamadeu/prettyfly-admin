@@ -86,7 +86,7 @@ class ProductController extends Controller
         }
 
         foreach ($uploads as $index => $upload) {
-            $path = $upload->store($directory, 'public');
+            $path = $upload->store($directory, config('filesystems.uploads'));
 
             if (! $path) {
                 throw new \RuntimeException('Não foi possível armazenar a imagem enviada.');
@@ -131,7 +131,7 @@ class ProductController extends Controller
     private function removeStoredFiles(array $paths): void
     {
         foreach ($paths as $path) {
-            if (! Storage::disk('public')->delete($path)) {
+            if (! Storage::disk(config('filesystems.uploads'))->delete($path)) {
                 throw new \RuntimeException('Não foi possível excluir um arquivo de imagem armazenado.');
             }
         }
