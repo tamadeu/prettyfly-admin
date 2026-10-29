@@ -52,6 +52,12 @@ class CouponService
     public function redeem(Cart $cart): void
     {
         DB::transaction(function () use ($cart): void {
+            $coupon = Coupon::query()->whereKey($cart->coupon_id)->lockForUpdate()->first();
+            if (! $coupon) {
+                $this->fail('code', 'Este cupom não está mais disponível.');
+            }
+            $this->quote($coupon, $cart);
+
             $usage = CouponUsage::query()
                 ->where('cart_id', $cart->id)
                 ->where('coupon_id', $cart->coupon_id)
