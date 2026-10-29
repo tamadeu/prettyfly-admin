@@ -6,6 +6,7 @@ import {
     Globe,
     Package,
     ShoppingCart,
+    TicketPercent,
     Settings,
     Users,
     SquareTerminal,
@@ -77,6 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ],
             },
             { title: 'Carrinhos', url: route('carts.index'), icon: ShoppingCart, isActive: url.startsWith('/carrinhos') },
+            { title: 'Cupons', url: route('cupons.index'), icon: TicketPercent, isActive: url.startsWith('/cupons') },
             {
                 title: 'Clientes',
                 url: route('clientes.index'),
