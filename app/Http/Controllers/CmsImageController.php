@@ -11,9 +11,9 @@ class CmsImageController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,avif,gif', 'max:5120'],
+            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,avif,gif,ico', 'max:5120'],
         ], [
-            'image.mimes' => 'Envie uma imagem JPG, PNG, WEBP, AVIF ou GIF.',
+            'image.mimes' => 'Envie uma imagem JPG, PNG, WEBP, AVIF, GIF ou ICO.',
             'image.max' => 'A imagem deve ter no máximo 5 MB.',
         ]);
 

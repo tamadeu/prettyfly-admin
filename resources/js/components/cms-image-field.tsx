@@ -85,7 +85,7 @@ export function ImageField({ value, onChange }: { value: string; onChange: (valu
                     </div>
                 </div>
             </div>
-            <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" className="hidden" onChange={handleFile} />
+            <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon,.ico" className="hidden" onChange={handleFile} />
         </div>
     );
 }
@@ -141,7 +141,7 @@ export function ImageListField({ value, onChange }: { value: string[]; onChange:
                 ref={input}
                 type="file"
                 multiple
-                accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/x-icon,image/vnd.microsoft.icon,.ico"
                 className="hidden"
                 onChange={handleFiles}
             />

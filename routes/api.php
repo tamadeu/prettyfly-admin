@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\CatalogFooterController;
 use App\Http\Controllers\Api\V1\CatalogHeaderController;
 use App\Http\Controllers\Api\V1\CatalogPageController;
 use App\Http\Controllers\Api\V1\CatalogProductController;
+use App\Http\Controllers\Api\V1\CatalogSiteController;
 use App\Http\Middleware\AuthenticateCatalogApi;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,7 @@ Route::prefix('v1')
         Route::get('/collections', [CatalogCollectionController::class, 'index']);
         Route::get('/collections/{slug}', [CatalogCollectionController::class, 'show']);
         Route::get('/collections/{slug}/products', [CatalogCollectionController::class, 'products']);
+        Route::get('/site/settings', [CatalogSiteController::class, 'show']);
         Route::get('/site/footer', [CatalogFooterController::class, 'show']);
         Route::get('/site/header', [CatalogHeaderController::class, 'show']);
         Route::get('/pages/{slug}', [CatalogPageController::class, 'show']);

@@ -78,8 +78,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: 'Site',
                 url: '#',
                 icon: Globe,
-                isActive: url.startsWith('/cms') || url.startsWith('/cabecalho') || url.startsWith('/rodape'),
+                isActive: url.startsWith('/site-geral') || url.startsWith('/cms') || url.startsWith('/cabecalho') || url.startsWith('/rodape'),
                 items: [
+                    {
+                        title: 'Geral',
+                        url: route('site.edit'),
+                        isActive: url.startsWith('/site-geral'),
+                    },
                     {
                         title: 'CMS',
                         url: route('cms.index'),

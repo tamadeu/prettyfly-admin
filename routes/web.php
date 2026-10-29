@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CmsImageController;
 use App\Http\Controllers\CmsPageController;
@@ -37,6 +38,8 @@ Route::middleware(config('template.enable_verification') ? ['auth', 'verified', 
     Route::get('/colecoes/produtos', [CollectionController::class, 'searchProducts'])->name('colecoes.products');
     Route::post('/colecoes/preview', [CollectionController::class, 'preview'])->name('colecoes.preview');
     Route::resource('colecoes', CollectionController::class)->parameters(['colecoes' => 'colecao'])->except(['show']);
+    Route::get('/site-geral', [SiteSettingController::class, 'edit'])->name('site.edit');
+    Route::put('/site-geral', [SiteSettingController::class, 'update'])->name('site.update');
     Route::get('/cabecalho', [HeaderSettingController::class, 'edit'])->name('header.edit');
     Route::put('/cabecalho', [HeaderSettingController::class, 'update'])->name('header.update');
     Route::get('/rodape', [FooterSettingController::class, 'edit'])->name('footer.edit');
