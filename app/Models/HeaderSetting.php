@@ -48,17 +48,17 @@ class HeaderSetting extends Model
             'text_color' => '#ffffff',
             'autoplay' => false,
             'announcements' => [
-                'Welcome to our store →',
-                'Free shipping on orders over $150 →',
-                'New arrivals just dropped →',
+                'Boas-vindas à nossa loja →',
+                'Frete grátis em pedidos acima de US$ 150 →',
+                'Acabaram de chegar novidades →',
             ],
             'socials' => collect(array_keys(self::SOCIAL_NETWORKS))
                 ->map(fn (string $network) => ['network' => $network, 'href' => '#'])
                 ->all(),
             'show_currency' => true,
-            'currencies' => ['Bangladesh USD $', 'Canada USD $', 'Germany USD $', 'Netherlands USD $', 'Norway USD $', 'United Kingdom USD $', 'United States USD $'],
+            'currencies' => ['Bangladesh — USD $', 'Canadá — USD $', 'Alemanha — USD $', 'Países Baixos — USD $', 'Noruega — USD $', 'Reino Unido — USD $', 'Estados Unidos — USD $'],
             'show_language' => true,
-            'languages' => ['English', 'Español', 'Português (brasil)', 'Français'],
+            'languages' => ['Português (Brasil)', 'Español', 'Français', 'English'],
         ];
     }
 
