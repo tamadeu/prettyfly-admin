@@ -6,6 +6,7 @@ import {
     Globe,
     Package,
     Settings,
+    Users,
     SquareTerminal,
 } from 'lucide-react';
 
@@ -73,6 +74,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         isActive: url.startsWith('/categorias'),
                     },
                 ],
+            },
+            {
+                title: 'Clientes',
+                url: route('clientes.index'),
+                icon: Users,
+                isActive: url.startsWith('/clientes'),
             },
             {
                 title: 'Site',

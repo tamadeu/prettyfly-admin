@@ -23,6 +23,9 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         'password',
     ];
 
+    public const TYPE_ADMIN = 'admin';
+    public const TYPE_CUSTOMER = 'customer';
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -44,6 +47,31 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->type === self::TYPE_ADMIN;
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->type === self::TYPE_CUSTOMER;
+    }
+
+    public function scopeAdmins($query)
+    {
+        return $query->where('type', self::TYPE_ADMIN);
+    }
+
+    public function customerTokens(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CustomerToken::class);
+    }
+
+    public function customer(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Customer::class);
     }
 
     /**

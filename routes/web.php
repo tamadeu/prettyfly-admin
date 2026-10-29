@@ -19,13 +19,14 @@ if (config('app.env') === 'local') {
 
 /* Authentication routes */
 Auth::routes([
+    'register' => false,
     'verify' => config('template.enable_verification') ?? true,
 ]);
 Route::get('/email/verified', [\App\Http\Controllers\Auth\VerificationController::class, 'verified'])->name('verification.verified');
 Route::get('/password/resetSent', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showPasswordMailSentPage'])->name('password.request.sent');
 Route::get('/password/resetSuccess', [\App\Http\Controllers\Auth\ResetPasswordController::class, 'showResetSuccessPage'])->name('password.reset.success');
 
-Route::middleware(config('template.enable_verification') ? ['auth', 'verified', 'translations'] : ['auth', 'translations'])->group(function () {
+Route::middleware(config('template.enable_verification') ? ['auth', 'admin', 'verified', 'translations'] : ['auth', 'admin', 'translations'])->group(function () {
     Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/perfil', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/perfil/nome', [App\Http\Controllers\ProfileController::class, 'updateName'])->name('profile.name.update');
@@ -34,6 +35,7 @@ Route::middleware(config('template.enable_verification') ? ['auth', 'verified', 
     Route::put('/configuracoes', [App\Http\Controllers\ApplicationSettingsController::class, 'update'])->name('settings.application.update');
     Route::resource('produtos', ProductController::class)->except(['show']);
     Route::resource('marcas', BrandController::class)->parameters(['marcas' => 'marca'])->except(['show']);
+    Route::resource('clientes', \App\Http\Controllers\CustomerController::class)->parameters(['clientes' => 'cliente'])->except(['show']);
     Route::resource('categorias', CategoryController::class)->except(['show']);
     Route::get('/colecoes/produtos', [CollectionController::class, 'searchProducts'])->name('colecoes.products');
     Route::post('/colecoes/preview', [CollectionController::class, 'preview'])->name('colecoes.preview');

@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
         $middleware->alias([
+            'admin' => \App\Http\Middleware\EnsureAdminUser::class,
             'translations' => \App\Http\Middleware\AddApplicationTranslations::class,
         ]);
     })

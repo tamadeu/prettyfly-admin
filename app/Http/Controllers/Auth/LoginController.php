@@ -42,6 +42,14 @@ class LoginController extends Controller
     /**
      * Show the application registration form.
      */
+    protected function credentials(\Illuminate\Http\Request $request): array
+    {
+        return [
+            ...$request->only($this->username(), 'password'),
+            'type' => \App\Models\User::TYPE_ADMIN,
+        ];
+    }
+
     public function showLoginForm(): \Inertia\Response
     {
         return Inertia::render('auth/login');
