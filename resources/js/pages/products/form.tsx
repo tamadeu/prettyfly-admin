@@ -69,6 +69,7 @@ interface Product {
     name: string;
     slug: string;
     description: string | null;
+    short_description: string | null;
     category_id: number | null;
     brand_id: number | null;
     is_visible: boolean;
@@ -90,6 +91,7 @@ interface ProductFormData {
     name: string;
     slug: string;
     description: string;
+    short_description: string;
     category_id: string;
     brand_id: string;
     is_visible: boolean;
@@ -137,6 +139,7 @@ function ProductFormPage({
             name: product?.name ?? '',
             slug: product?.slug ?? '',
             description: product?.description ?? '',
+            short_description: product?.short_description ?? '',
             category_id: product?.category_id
                 ? String(product.category_id)
                 : '',
@@ -520,12 +523,32 @@ function ProductFormPage({
                                     </Field>
                                     <Field
                                         className="sm:col-span-2"
+                                        data-invalid={Boolean(errors.short_description)}
+                                    >
+                                        <FieldLabel htmlFor="product-short-description">
+                                            Descrição curta
+                                        </FieldLabel>
+                                        <Textarea
+                                            id="product-short-description"
+                                            value={data.short_description}
+                                            onChange={(event) => setData('short_description', event.target.value)}
+                                            aria-invalid={Boolean(errors.short_description)}
+                                            rows={3}
+                                            maxLength={1000}
+                                        />
+                                        <FieldDescription>
+                                            Texto breve exibido ao lado das fotos, logo abaixo do preço. Vazio usa a descrição completa.
+                                        </FieldDescription>
+                                        <FieldError>{errors.short_description}</FieldError>
+                                    </Field>
+                                    <Field
+                                        className="sm:col-span-2"
                                         data-invalid={Boolean(
                                             errors.description,
                                         )}
                                     >
                                         <FieldLabel htmlFor="product-description">
-                                            Descrição
+                                            Descrição completa
                                         </FieldLabel>
                                         <Textarea
                                             id="product-description"
@@ -541,6 +564,9 @@ function ProductFormPage({
                                             )}
                                             rows={5}
                                         />
+                                        <FieldDescription>
+                                            Exibida na aba “Descrição”, mais abaixo na página do produto.
+                                        </FieldDescription>
                                         <FieldError>
                                             {errors.description}
                                         </FieldError>

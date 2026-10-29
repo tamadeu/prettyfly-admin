@@ -14,6 +14,7 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
+            'short_description' => $this->short_description,
             'category' => CategoryResource::make($this->whenLoaded('category')),
             'brand' => BrandResource::make($this->whenLoaded('brand')),
             'images' => $this->whenLoaded('images', fn () => $this->images->map(fn ($image) => [

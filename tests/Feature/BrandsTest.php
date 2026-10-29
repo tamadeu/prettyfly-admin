@@ -46,4 +46,13 @@ class BrandsTest extends TestCase
         $this->assertSame('Nike', $res->json('data.0.brand.name'));
         $this->assertNull($this->getJson('/api/v1/products/b', $h)->json('data.brand'));
     }
+
+    public function test_api_exposes_short_description(): void
+    {
+        config(['catalog.api_token' => str_repeat('a', 40)]);
+        Product::create(['name' => 'A', 'slug' => 'a', 'description' => 'Longa', 'short_description' => 'Curta', 'is_active' => true, 'is_visible' => true]);
+
+        $this->getJson('/api/v1/products/a', ['Authorization' => 'Bearer '.str_repeat('a', 40)])
+            ->assertOk()->assertJsonPath('data.short_description', 'Curta')->assertJsonPath('data.description', 'Longa');
+    }
 }

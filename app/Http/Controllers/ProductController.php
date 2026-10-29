@@ -378,6 +378,7 @@ class ProductController extends Controller
             'name' => ['required', 'string', 'max:150'],
             'slug' => ['required', 'string', 'max:180', Rule::unique('products', 'slug')->ignore($produto)],
             'description' => ['nullable', 'string', 'max:10000'],
+            'short_description' => ['nullable', 'string', 'max:1000'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
             'is_visible' => ['required', 'boolean'],
