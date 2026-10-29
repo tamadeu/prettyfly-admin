@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CmsImageController;
@@ -36,6 +37,7 @@ Route::middleware(config('template.enable_verification') ? ['auth', 'admin', 've
     Route::get('/configuracoes', [App\Http\Controllers\ApplicationSettingsController::class, 'edit'])->name('settings.application.edit');
     Route::put('/configuracoes', [App\Http\Controllers\ApplicationSettingsController::class, 'update'])->name('settings.application.update');
     Route::resource('produtos', ProductController::class)->except(['show']);
+    Route::resource('cupons', CouponController::class)->parameters(['cupons' => 'cupom'])->except(['show']);
     Route::resource('marcas', BrandController::class)->parameters(['marcas' => 'marca'])->except(['show']);
     Route::get('/carrinhos', [\App\Http\Controllers\CartController::class, 'index'])->name('carts.index');
     Route::resource('clientes', \App\Http\Controllers\CustomerController::class)->parameters(['clientes' => 'cliente'])->except(['show']);

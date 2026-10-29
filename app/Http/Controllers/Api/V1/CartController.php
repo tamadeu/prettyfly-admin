@@ -9,6 +9,7 @@ use App\Models\ProductVariant;
 use App\Models\ShippingSetting;
 use App\Models\User;
 use App\Services\SuperFrete;
+use App\Services\CouponService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,52 @@ use Illuminate\Validation\ValidationException;
 
 class CartController extends Controller
 {
+    public function applyCoupon(Request $request): JsonResponse
+    {
+        return $this->couponAction($request, false);
+    }
+
+    public function removeCoupon(Request $request): JsonResponse
+    {
+        return $this->couponAction($request, true);
+    }
+
+    private function couponAction(Request $request, bool $remove): JsonResponse
+    {
+        $data = $request->validate([
+            'version' => ['required', 'integer', 'min:0'],
+            'owner' => ['required', 'string', 'max:80'],
+            ...($remove ? [] : ['code' => ['required', 'string', 'max:80']]),
+        ]);
+
+        $snapshot = $this->show($request)->getData(true)['data'];
+        abort_unless($snapshot['id'], 422, 'Adicione produtos ao carrinho antes de aplicar um cupom.');
+        abort_unless($snapshot['owner'] === $data['owner'] && $snapshot['version'] === $data['version'], 409, 'O carrinho mudou. Recarregue os dados para continuar.');
+
+        $cart = Cart::query()->findOrFail($snapshot['id']);
+        $user = null;
+        if ($request->hasHeader('X-Customer-Token')) {
+            $user = CustomerToken::findValid($request->header('X-Customer-Token'))?->user;
+            abort_unless($user?->isCustomer() && $user->customer?->is_active, 401, 'Sessão inválida.');
+        }
+
+        return DB::transaction(function () use ($cart, $data, $snapshot, $user, $remove) {
+            $current = Cart::query()->whereKey($cart->id)->lockForUpdate()->firstOrFail();
+            abort_unless($current->version === $data['version'] && $snapshot['owner'] === $data['owner'], 409, 'O carrinho mudou. Recarregue os dados para continuar.');
+
+            if ($remove) {
+                app(CouponService::class)->remove($current);
+            } else {
+                app(CouponService::class)->apply($current, $data['code'], $user);
+            }
+
+            $current->version++;
+            $current->save();
+
+            return response()->json(['data' => $this->payload($current->fresh(), $snapshot['owner'])]);
+        }, 3);
+    }
+
     public function show(Request $request): JsonResponse
     {
         return $this->handle($request, false);
@@ -124,6 +171,8 @@ class CartController extends Controller
                             $cart->shipping = null;
                         }
                         $cart->save();
+                        app(CouponService::class)->refreshReservation($cart, $user);
+                        $cart->refresh();
                     }
                 }
 
@@ -163,6 +212,24 @@ class CartController extends Controller
         $frete = app(SuperFrete::class);
         $shipping = $cart && $frete->isCurrent($cart, $cart->shipping) ? $frete->publicQuote($cart->shipping) : null;
 
-        return ['free_shipping_policy' => ShippingSetting::current()->freeShippingPolicy(), 'shipping' => $shipping, 'id' => $cart?->id, 'version' => $cart?->version ?? 0, 'owner' => $owner, 'items' => $cart?->items ?? [], 'checkout' => (object) array_map(fn ($value) => $value ?? '', $cart?->checkout ?? [])];
+        $coupon = $cart ? app(CouponService::class)->snapshot($cart) : null;
+        $subtotal = $coupon !== null
+            ? (float) ($coupon['subtotal'] ?? 0)
+            : collect($cart?->items ?? [])->sum(fn ($item) => (float) ($item['price'] ?? 0) * (int) ($item['quantity'] ?? 0));
+        $discount = (float) ($coupon['discount_amount'] ?? 0);
+
+        return [
+            'free_shipping_policy' => ShippingSetting::current()->freeShippingPolicy(),
+            'shipping' => $shipping,
+            'id' => $cart?->id,
+            'version' => $cart?->version ?? 0,
+            'owner' => $owner,
+            'items' => $cart?->items ?? [],
+            'checkout' => (object) array_map(fn ($value) => $value ?? '', $cart?->checkout ?? []),
+            'subtotal' => round($subtotal, 2),
+            'coupon' => $coupon,
+            'discount' => round($discount, 2),
+            'total' => round(max(0, $subtotal - $discount), 2),
+        ];
     }
 }
